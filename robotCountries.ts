@@ -20,7 +20,7 @@ class CountryObject {
     public cca2: string,
     public currencieName: string,
     public currencieSymbol: string,
-    public capitale: string,
+    public capital: string,
     public region: string,
     public subregion: string,
     public language: string,
@@ -33,43 +33,73 @@ class CountryObject {
     public gini: number,
     public carside: string,
     public startOfWeek: string,
-    public capitalLocation: number[]
-  ) {}
+    public capitalLocation: number[],
+    //meteo part
+    public capitalMainDescription: string,
+    public capitalTemperature: number,
+    public capitalHumidity: number,
+    public capitalPressure: number,
+    public capitalWindSpeed: number,
+    public capitalWindDirection: number,
+    public capitalCloudPercentage: number
+  )
+  {};
 }
 
 const countriesTab: CountryObject[] = [];
 
 async function fetchACountry(countryToFetch: string) {
-  let url = `https://restcountries.com/v3.1/name/${countryToFetch}`;
+  let currentCountry = new CountryObject(
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    [],
+    false,
+    [],
+    0,
+    "",
+    0,
+    0,
+    "",
+    "",
+    [],
+    "",
+    0,
+    0,
+    0,
+    0,
+    0,
+    0,
+  );
+
+  const url = `https://restcountries.com/v3.1/name/${countryToFetch}`;
   try {
     const response = await fetch(url);
     if (response.ok) {
       const countries = await response.json();
       if (countries && countries.length > 0) {
         const country = countries[0];
-        let currentCountry = new CountryObject(
-          country.name.common,
-          country.name.official,
-          "",
-          "",
-          country.cca2,
-          "",
-          "",
-          country.capital,
-          country.region,
-          country.subregion,
-          "",
-          [],
-          country.landlocked,
-          [],
-          country.area,
-          country.flag,
-          country.population,
-          0,
-          country.car.side,
-          country.startOfWeek,
-          []
-        );
+
+        currentCountry.name = country.name.common;
+        currentCountry.official = country.name.official;
+        currentCountry.cca2 = country.cca2;
+        currentCountry.capital = country.capital;
+        currentCountry.region = country.region;
+        currentCountry.subregion = country.subregion;
+        currentCountry.islandlocked = country.landlocked;
+        currentCountry.area = country.area;
+        currentCountry.flag = country.flag;
+        currentCountry.population = country.population;
+        currentCountry.carside = country.car.side;
+        currentCountry.startOfWeek = country.startOfWeek;
 
         for (const nativeNameKey in country.name.nativeName) {
           if (country.name.nativeName.hasOwnProperty(nativeNameKey)) {
@@ -117,6 +147,24 @@ async function fetchACountry(countryToFetch: string) {
           currentCountry.capitalLocation.push(info);
         });
 
+        const apiKey: string = "f0ec6d4846a480ebbdb11409e8119ca9"
+        const capitalLongitude: number = currentCountry.capitalLocation[1];
+        const capitalLattitude: number = currentCountry.capitalLocation[0];
+        const urlMeto: string  = `https://api.openweathermap.org/data/2.5/weather?lat=${capitalLattitude}&lon=${capitalLongitude}&appid=${apiKey}`
+
+        const responseMeteo = await fetch(urlMeto);
+        if (responseMeteo.ok){
+          const currentMeteo = await responseMeteo.json();
+          if (responseMeteo) {
+            currentCountry.capitalMainDescription = currentMeteo.weather[0].description;
+            currentCountry.capitalTemperature = currentMeteo.main.temp - 273,15;
+            currentCountry.capitalHumidity = currentMeteo.main.humidity;
+            currentCountry.capitalPressure = currentMeteo.main.pressure;
+            currentCountry.capitalWindSpeed = currentMeteo.wind.speed;
+            currentCountry.capitalWindDirection = currentMeteo.wind.deg;
+            currentCountry.capitalCloudPercentage = currentMeteo.clouds.all;
+          }
+        }
         countriesTab.push(currentCountry);
       }
     }

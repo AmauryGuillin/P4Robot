@@ -19,7 +19,9 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { contriesToFetch } from "./Tables/tables.js";
 //import { ICountry } from "./Interfaces/interfaces";
 class CountryObject {
-    constructor(name, official, nativeNameOfficial, nativeNameCommon, cca2, currencieName, currencieSymbol, capitale, region, subregion, language, latlng, islandlocked, borders, area, flag, population, gini, carside, startOfWeek, capitalLocation) {
+    constructor(name, official, nativeNameOfficial, nativeNameCommon, cca2, currencieName, currencieSymbol, capital, region, subregion, language, latlng, islandlocked, borders, area, flag, population, gini, carside, startOfWeek, capitalLocation, 
+    //meteo part
+    capitalMainDescription, capitalTemperature, capitalHumidity, capitalPressure, capitalWindSpeed, capitalWindDirection, capitalCloudPercentage) {
         this.name = name;
         this.official = official;
         this.nativeNameOfficial = nativeNameOfficial;
@@ -27,7 +29,7 @@ class CountryObject {
         this.cca2 = cca2;
         this.currencieName = currencieName;
         this.currencieSymbol = currencieSymbol;
-        this.capitale = capitale;
+        this.capital = capital;
         this.region = region;
         this.subregion = subregion;
         this.language = language;
@@ -41,19 +43,39 @@ class CountryObject {
         this.carside = carside;
         this.startOfWeek = startOfWeek;
         this.capitalLocation = capitalLocation;
+        this.capitalMainDescription = capitalMainDescription;
+        this.capitalTemperature = capitalTemperature;
+        this.capitalHumidity = capitalHumidity;
+        this.capitalPressure = capitalPressure;
+        this.capitalWindSpeed = capitalWindSpeed;
+        this.capitalWindDirection = capitalWindDirection;
+        this.capitalCloudPercentage = capitalCloudPercentage;
     }
+    ;
 }
 const countriesTab = [];
 function fetchACountry(countryToFetch) {
     return __awaiter(this, void 0, void 0, function* () {
-        let url = `https://restcountries.com/v3.1/name/${countryToFetch}`;
+        let currentCountry = new CountryObject("", "", "", "", "", "", "", "", "", "", "", [], false, [], 0, "", 0, 0, "", "", [], "", 0, 0, 0, 0, 0, 0);
+        const url = `https://restcountries.com/v3.1/name/${countryToFetch}`;
         try {
             const response = yield fetch(url);
             if (response.ok) {
                 const countries = yield response.json();
                 if (countries && countries.length > 0) {
                     const country = countries[0];
-                    let currentCountry = new CountryObject(country.name.common, country.name.official, "", "", country.cca2, "", "", country.capital, country.region, country.subregion, "", [], country.landlocked, [], country.area, country.flag, country.population, 0, country.car.side, country.startOfWeek, []);
+                    currentCountry.name = country.name.common;
+                    currentCountry.official = country.name.official;
+                    currentCountry.cca2 = country.cca2;
+                    currentCountry.capital = country.capital;
+                    currentCountry.region = country.region;
+                    currentCountry.subregion = country.subregion;
+                    currentCountry.islandlocked = country.landlocked;
+                    currentCountry.area = country.area;
+                    currentCountry.flag = country.flag;
+                    currentCountry.population = country.population;
+                    currentCountry.carside = country.car.side;
+                    currentCountry.startOfWeek = country.startOfWeek;
                     for (const nativeNameKey in country.name.nativeName) {
                         if (country.name.nativeName.hasOwnProperty(nativeNameKey)) {
                             const nativeName = country.name.nativeName[nativeNameKey];
@@ -93,6 +115,23 @@ function fetchACountry(countryToFetch) {
                     country.capitalInfo.latlng.forEach((info) => {
                         currentCountry.capitalLocation.push(info);
                     });
+                    const apiKey = "f0ec6d4846a480ebbdb11409e8119ca9";
+                    const capitalLongitude = currentCountry.capitalLocation[1];
+                    const capitalLattitude = currentCountry.capitalLocation[0];
+                    const urlMeto = `https://api.openweathermap.org/data/2.5/weather?lat=${capitalLattitude}&lon=${capitalLongitude}&appid=${apiKey}`;
+                    const responseMeteo = yield fetch(urlMeto);
+                    if (responseMeteo.ok) {
+                        const currentMeteo = yield responseMeteo.json();
+                        if (responseMeteo) {
+                            currentCountry.capitalMainDescription = currentMeteo.weather[0].description;
+                            currentCountry.capitalTemperature = currentMeteo.main.temp - 273, 15;
+                            currentCountry.capitalHumidity = currentMeteo.main.humidity;
+                            currentCountry.capitalPressure = currentMeteo.main.pressure;
+                            currentCountry.capitalWindSpeed = currentMeteo.wind.speed;
+                            currentCountry.capitalWindDirection = currentMeteo.wind.deg;
+                            currentCountry.capitalCloudPercentage = currentMeteo.clouds.all;
+                        }
+                    }
                     countriesTab.push(currentCountry);
                 }
             }
