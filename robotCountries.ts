@@ -9,7 +9,6 @@
 */
 
 import { contriesToFetch } from "./Tables/tables.js";
-//import { ICountry } from "./Interfaces/interfaces";
 
 class CountryObject {
   constructor(
@@ -42,8 +41,7 @@ class CountryObject {
     public capitalWindSpeed: number,
     public capitalWindDirection: number,
     public capitalCloudPercentage: number
-  )
-  {};
+  ) {}
 }
 
 const countriesTab: CountryObject[] = [];
@@ -77,7 +75,7 @@ async function fetchACountry(countryToFetch: string) {
     0,
     0,
     0,
-    0,
+    0
   );
 
   const url = `https://restcountries.com/v3.1/name/${countryToFetch}`;
@@ -147,17 +145,19 @@ async function fetchACountry(countryToFetch: string) {
           currentCountry.capitalLocation.push(info);
         });
 
-        const apiKey: string = "f0ec6d4846a480ebbdb11409e8119ca9"
+        const apiKey: string = "f0ec6d4846a480ebbdb11409e8119ca9";
         const capitalLongitude: number = currentCountry.capitalLocation[1];
         const capitalLattitude: number = currentCountry.capitalLocation[0];
-        const urlMeto: string  = `https://api.openweathermap.org/data/2.5/weather?lat=${capitalLattitude}&lon=${capitalLongitude}&appid=${apiKey}`
+        const urlMeto: string = `https://api.openweathermap.org/data/2.5/weather?lat=${capitalLattitude}&lon=${capitalLongitude}&appid=${apiKey}`;
 
         const responseMeteo = await fetch(urlMeto);
-        if (responseMeteo.ok){
+        if (responseMeteo.ok) {
           const currentMeteo = await responseMeteo.json();
           if (responseMeteo) {
-            currentCountry.capitalMainDescription = currentMeteo.weather[0].description;
-            currentCountry.capitalTemperature = currentMeteo.main.temp - 273,15;
+            currentCountry.capitalMainDescription =
+              currentMeteo.weather[0].description;
+            (currentCountry.capitalTemperature = currentMeteo.main.temp - 273),
+              15;
             currentCountry.capitalHumidity = currentMeteo.main.humidity;
             currentCountry.capitalPressure = currentMeteo.main.pressure;
             currentCountry.capitalWindSpeed = currentMeteo.wind.speed;

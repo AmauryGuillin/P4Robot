@@ -2,8 +2,8 @@
 ------------PLAN D'ACTION POUR CE ROBOT------------
 - Créer un objet dans lequel ranger mes données ✅
 - Récupérer les donées de l'ISS et les ranger dans mon objet ✅
-- Stocker mon objet en base de donnée Mongo ❌
-- Lancer le robot toutes les 5 minutes ❌
+- Stocker mon objet en base de donnée Mongo ✅
+- Lancer le robot toutes les 5 minutes ✅
 ---------------------------------------------------
 */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
@@ -15,14 +15,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-class IssLocationObject {
-    constructor(longitude, latitude, time) {
-        this.longitude = longitude;
-        this.latitude = latitude;
-        this.time = time;
-    }
-}
-var issLocationArray = [];
+import mongoose from "mongoose";
+const issLocationSchema = new mongoose.Schema({
+    longitude: String,
+    latitude: String,
+    timestamp: Number,
+});
+const issLocation = mongoose.model("issLocation", issLocationSchema);
 function fetchIssLocation() {
     return __awaiter(this, void 0, void 0, function* () {
         let url = `http://api.open-notify.org/iss-now.json`;
@@ -31,11 +30,14 @@ function fetchIssLocation() {
             if (response.ok) {
                 const location = yield response.json();
                 if (location) {
-                    let currentLocation = new IssLocationObject("", "", 0);
-                    currentLocation.longitude = location.iss_position.longitude;
-                    currentLocation.latitude = location.iss_position.latitude;
-                    currentLocation.time = location.timestamp;
-                    issLocationArray.push(currentLocation);
+                    yield mongoose.connect("mongodb://127.0.0.1:27017/HamTerro");
+                    let currentLocation = new issLocation({
+                        longitude: location.iss_position.longitude,
+                        latitude: location.iss_position.latitude,
+                        timestamp: location.timestamp,
+                    });
+                    yield currentLocation.save();
+                    yield mongoose.disconnect();
                 }
             }
         }
@@ -46,9 +48,9 @@ function fetchIssLocation() {
 }
 function displayAPIISSInformation() {
     return __awaiter(this, void 0, void 0, function* () {
+        console.log(`RobotISS powered ON`);
         yield fetchIssLocation();
-        console.log(issLocationArray);
+        console.log(`RobotISS powered OFF`);
     });
 }
 displayAPIISSInformation();
-export {};

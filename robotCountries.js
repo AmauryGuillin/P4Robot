@@ -17,7 +17,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { contriesToFetch } from "./Tables/tables.js";
-//import { ICountry } from "./Interfaces/interfaces";
 class CountryObject {
     constructor(name, official, nativeNameOfficial, nativeNameCommon, cca2, currencieName, currencieSymbol, capital, region, subregion, language, latlng, islandlocked, borders, area, flag, population, gini, carside, startOfWeek, capitalLocation, 
     //meteo part
@@ -51,7 +50,6 @@ class CountryObject {
         this.capitalWindDirection = capitalWindDirection;
         this.capitalCloudPercentage = capitalCloudPercentage;
     }
-    ;
 }
 const countriesTab = [];
 function fetchACountry(countryToFetch) {
@@ -123,8 +121,10 @@ function fetchACountry(countryToFetch) {
                     if (responseMeteo.ok) {
                         const currentMeteo = yield responseMeteo.json();
                         if (responseMeteo) {
-                            currentCountry.capitalMainDescription = currentMeteo.weather[0].description;
-                            currentCountry.capitalTemperature = currentMeteo.main.temp - 273, 15;
+                            currentCountry.capitalMainDescription =
+                                currentMeteo.weather[0].description;
+                            (currentCountry.capitalTemperature = currentMeteo.main.temp - 273),
+                                15;
                             currentCountry.capitalHumidity = currentMeteo.main.humidity;
                             currentCountry.capitalPressure = currentMeteo.main.pressure;
                             currentCountry.capitalWindSpeed = currentMeteo.wind.speed;
