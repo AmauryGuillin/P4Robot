@@ -132,7 +132,7 @@ export const contriesToFetch: string[] = [
   "Oman",
   "Pakistan",
   "Palau",
-  "Palestinian Territory",
+  "Palestine",
   "Panama",
   "Papua New Guinea",
   "Paraguay",
