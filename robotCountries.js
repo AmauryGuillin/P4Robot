@@ -3,7 +3,7 @@
 - Recupérer une liste de tous les pays. ✅
 - Créer un objet dans lequel ranger chaque pays ✅
 - Faire tourner le robot sur cette liste afain de récupérer chaque pays indépendanment ✅
-- Ranger tous les pays en base de donnée Mongo ❌
+- Ranger tous les pays en base de donnée Mongo ✅
 - Lancer le robot tous les 1er du mois ❌
 ---------------------------------------------------
 */
@@ -140,9 +140,11 @@ function fetchACountry(countryToFetch) {
                     currentCountry.capitalLocation.push(country.capitalInfo.latlng[1]);
                     currentCountry.latlng.push(country.latlng[0]);
                     currentCountry.latlng.push(country.latlng[1]);
-                    country.borders.forEach((countryCode) => {
-                        currentCountry.borders.push(countryCode);
-                    });
+                    if (country.borders) {
+                        country.borders.forEach((countryCode) => {
+                            currentCountry.borders.push(countryCode);
+                        });
+                    }
                     const apiKey = "f0ec6d4846a480ebbdb11409e8119ca9";
                     const capitalLongitude = currentCountry.capitalLocation[1];
                     const capitalLattitude = currentCountry.capitalLocation[0];
@@ -193,6 +195,7 @@ function fetchACountry(countryToFetch) {
                     });
                     //countriesTab.push(currentCountry);
                     yield countryToAdd.save();
+                    mongoose.disconnect();
                 }
             }
         }
@@ -208,9 +211,8 @@ function displayCountriesInfo() {
             yield fetchACountry(country);
             //console.log(countriesTab);
         }));
-        //await fetchACountry("France");
+        //await fetchACountry("New Zealand");
         console.log(`RobotCountries powered OFF`);
-        mongoose.disconnect();
     });
 }
 displayCountriesInfo();
