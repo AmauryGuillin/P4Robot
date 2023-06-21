@@ -3,7 +3,7 @@
 - Créer un objet dans lequel ranger mes données ✅
 - Récupérer les donées de l'ISS et les ranger dans mon objet ✅
 - Stocker mon objet en base de donnée Mongo ✅
-- Lancer le robot toutes les 5 minutes ✅
+- Lancer le robot toutes les 10 minutes ❌
 ---------------------------------------------------
 */
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
