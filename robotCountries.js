@@ -17,6 +17,36 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { contriesToFetch } from "./Tables/tables.js";
+import mongoose from "mongoose";
+const CountrySchema = new mongoose.Schema({
+    name: String,
+    official: String,
+    nativeNameOfficial: String,
+    cca2: String,
+    currencieName: String,
+    currencieSymbol: String,
+    capital: String,
+    region: String,
+    subregion: String,
+    language: String,
+    latlng: [Number],
+    islandlocked: Boolean,
+    borders: [String],
+    area: Number,
+    flag: String,
+    population: Number,
+    gini: Number,
+    carside: String,
+    startOfWeek: String,
+    capitalLocation: [Number],
+    capitalMainDescription: String,
+    capitalTemperature: Number,
+    capitalHumidity: Number,
+    capitalPressure: Number,
+    capitalWindSpeed: Number,
+    capitalWindDirection: Number,
+    capitalCouldPercentage: Number,
+});
 class CountryObject {
     constructor(name, official, nativeNameOfficial, nativeNameCommon, cca2, currencieName, currencieSymbol, capital, region, subregion, language, latlng, islandlocked, borders, area, flag, population, gini, carside, startOfWeek, capitalLocation, 
     //meteo part
@@ -51,7 +81,8 @@ class CountryObject {
         this.capitalCloudPercentage = capitalCloudPercentage;
     }
 }
-const countriesTab = [];
+const countriesToStore = mongoose.model("Countries", CountrySchema);
+//const countriesTab: CountryObject[] = [];
 function fetchACountry(countryToFetch) {
     return __awaiter(this, void 0, void 0, function* () {
         let currentCountry = new CountryObject("", "", "", "", "", "", "", "", "", "", "", [], false, [], 0, "", 0, 0, "", "", [], "", 0, 0, 0, 0, 0, 0);
@@ -61,11 +92,12 @@ function fetchACountry(countryToFetch) {
             if (response.ok) {
                 const countries = yield response.json();
                 if (countries && countries.length > 0) {
+                    yield mongoose.connect("mongodb://127.0.0.1:27017/test");
                     const country = countries[0];
                     currentCountry.name = country.name.common;
                     currentCountry.official = country.name.official;
                     currentCountry.cca2 = country.cca2;
-                    currentCountry.capital = country.capital;
+                    currentCountry.capital = country.capital[0];
                     currentCountry.region = country.region;
                     currentCountry.subregion = country.subregion;
                     currentCountry.islandlocked = country.landlocked;
@@ -97,12 +129,6 @@ function fetchACountry(countryToFetch) {
                             break;
                         }
                     }
-                    country.latlng.forEach((value) => {
-                        currentCountry.latlng.push(value);
-                    });
-                    country.borders.forEach((countryCode) => {
-                        currentCountry.borders.push(countryCode);
-                    });
                     for (const giniKey in country.gini) {
                         if (country.gini.hasOwnProperty(giniKey)) {
                             const gini = country.gini[giniKey];
@@ -110,8 +136,12 @@ function fetchACountry(countryToFetch) {
                             break;
                         }
                     }
-                    country.capitalInfo.latlng.forEach((info) => {
-                        currentCountry.capitalLocation.push(info);
+                    currentCountry.capitalLocation.push(country.capitalInfo.latlng[0]);
+                    currentCountry.capitalLocation.push(country.capitalInfo.latlng[1]);
+                    currentCountry.latlng.push(country.latlng[0]);
+                    currentCountry.latlng.push(country.latlng[1]);
+                    country.borders.forEach((countryCode) => {
+                        currentCountry.borders.push(countryCode);
                     });
                     const apiKey = "f0ec6d4846a480ebbdb11409e8119ca9";
                     const capitalLongitude = currentCountry.capitalLocation[1];
@@ -132,7 +162,37 @@ function fetchACountry(countryToFetch) {
                             currentCountry.capitalCloudPercentage = currentMeteo.clouds.all;
                         }
                     }
-                    countriesTab.push(currentCountry);
+                    let countryToAdd = new countriesToStore({
+                        name: currentCountry.name,
+                        official: currentCountry.official,
+                        nativeNameOfficial: currentCountry.nativeNameOfficial,
+                        cca2: currentCountry.cca2,
+                        currencieName: currentCountry.currencieName,
+                        currencieSymbol: currentCountry.currencieSymbol,
+                        capital: currentCountry.capital,
+                        region: currentCountry.region,
+                        subregion: currentCountry.subregion,
+                        language: currentCountry.language,
+                        latlng: currentCountry.latlng,
+                        islandlocked: currentCountry.islandlocked,
+                        borders: currentCountry.borders,
+                        area: currentCountry.area,
+                        flag: currentCountry.flag,
+                        population: currentCountry.population,
+                        gini: currentCountry.gini,
+                        carside: currentCountry.carside,
+                        startOfWeek: currentCountry.startOfWeek,
+                        capitalLocation: currentCountry.capitalLocation,
+                        capitalMainDescription: currentCountry.capitalMainDescription,
+                        capitalTemperature: currentCountry.capitalTemperature,
+                        capitalHumidity: currentCountry.capitalHumidity,
+                        capitalPressure: currentCountry.capitalPressure,
+                        capitalWindSpeed: currentCountry.capitalWindSpeed,
+                        capitalWindDirection: currentCountry.capitalWindDirection,
+                        capitalCouldPercentage: currentCountry.capitalCloudPercentage,
+                    });
+                    //countriesTab.push(currentCountry);
+                    yield countryToAdd.save();
                 }
             }
         }
@@ -143,10 +203,14 @@ function fetchACountry(countryToFetch) {
 }
 function displayCountriesInfo() {
     return __awaiter(this, void 0, void 0, function* () {
+        console.log(`RobotCountries powered ON`);
         contriesToFetch.forEach((country) => __awaiter(this, void 0, void 0, function* () {
             yield fetchACountry(country);
-            console.log(countriesTab);
+            //console.log(countriesTab);
         }));
+        //await fetchACountry("France");
+        console.log(`RobotCountries powered OFF`);
+        mongoose.disconnect();
     });
 }
 displayCountriesInfo();
