@@ -27,7 +27,6 @@ async function fetchIssLocation() {
     if (response.ok) {
       const location: IssJsonObject = await response.json();
       if (location) {
-        await mongoose.connect("mongodb://127.0.0.1:27017/HamTerro");
         const timestamp = Number(location.timestamp);
         let date = new Date(timestamp * 1000);
         let dateFormat = `${date.toLocaleDateString()}`;
@@ -49,9 +48,16 @@ async function fetchIssLocation() {
 }
 
 async function displayAPIISSInformation() {
-  console.log(`RobotISS powered ON`);
-  await fetchIssLocation();
-  console.log(`RobotISS powered OFF`);
+  const date = new Date();
+  console.log(`RobotISS powered ON (${date})`);
+  try {
+    mongoose.connect("mongodb://127.0.0.1:27017/test");
+    await fetchIssLocation();
+    mongoose.disconnect();
+  } catch (error) {
+    console.error(`An error occured while connecting to MongoDB: ${error}`);
+  }
+  console.log(`RobotISS powered OFF (${date})`);
 }
 
 displayAPIISSInformation();

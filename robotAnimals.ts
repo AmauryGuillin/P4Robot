@@ -158,9 +158,7 @@ function createAnimalObject(animal: any) {
 
 async function displayAnimalsInfo() {
   const date = new Date();
-  console.log(
-    `RobotAnimals powered ON (The ${date.getUTCDate()}/${date.getUTCMonth()}/${date.getFullYear()} at ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()})`
-  );
+  console.log(`RobotAnimals powered ON (${date})`);
   try {
     mongoose.connect("mongodb://127.0.0.1:27017/test");
     for (const animalToFetch of animalsLatinNames) {
@@ -170,9 +168,7 @@ async function displayAnimalsInfo() {
   } catch (error) {
     console.error(`An error occurred while connecting to MongoDB: ${error}`);
   }
-  console.log(
-    `RobotAnimals powered OFF (The ${date.getUTCDate()}/${date.getUTCMonth()}/${date.getFullYear()} at ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()})`
-  );
+  console.log(`RobotAnimals powered OFF (${date})`);
 }
 
 displayAnimalsInfo();
