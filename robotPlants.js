@@ -94,7 +94,7 @@ function fetchPlants(plantToFetch) {
             }
         }
         catch (error) {
-            console.error(`An error occured when fetching data from an animal : ${error}`);
+            console.error(`An error occured when fetching data from the plant named ${plantToFetch} --> ${error}`);
         }
     });
 }
@@ -160,7 +160,7 @@ function createPlantObject(plant) {
 function displayAnimalsInfo() {
     return __awaiter(this, void 0, void 0, function* () {
         const date = new Date();
-        console.log(`RobotPlants powered ON (The ${date.getUTCDate()}/${date.getUTCMonth()}/${date.getFullYear()} at ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()})`);
+        console.log(`RobotPlants powered ON (${date})`);
         try {
             mongoose.connect("mongodb://127.0.0.1:27017/test");
             for (const plant of plantsLatinNames) {
@@ -171,7 +171,7 @@ function displayAnimalsInfo() {
         catch (error) {
             console.error(`An error occured while connecting to MongoDB: ${error}`);
         }
-        console.log(`RobotPlants powered OFF (The ${date.getUTCDate()}/${date.getUTCMonth()}/${date.getFullYear()} at ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()})`);
+        console.log(`RobotPlants powered OFF (${date})`);
     });
 }
 displayAnimalsInfo();

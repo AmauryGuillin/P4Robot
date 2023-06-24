@@ -1,5 +1,5 @@
 // This table store all the countries
-export const contriesToFetch: string[] = [
+export const countriesToFetch: string[] = [
   "Afghanistan",
   "Albania",
   "Algeria",

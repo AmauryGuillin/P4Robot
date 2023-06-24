@@ -32,7 +32,6 @@ function fetchIssLocation() {
             if (response.ok) {
                 const location = yield response.json();
                 if (location) {
-                    yield mongoose.connect("mongodb://127.0.0.1:27017/HamTerro");
                     const timestamp = Number(location.timestamp);
                     let date = new Date(timestamp * 1000);
                     let dateFormat = `${date.toLocaleDateString()}`;
@@ -56,9 +55,17 @@ function fetchIssLocation() {
 }
 function displayAPIISSInformation() {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log(`RobotISS powered ON`);
-        yield fetchIssLocation();
-        console.log(`RobotISS powered OFF`);
+        const date = new Date();
+        console.log(`RobotISS powered ON (${date})`);
+        try {
+            mongoose.connect("mongodb://127.0.0.1:27017/test");
+            yield fetchIssLocation();
+            mongoose.disconnect();
+        }
+        catch (error) {
+            console.error(`An error occured while connecting to MongoDB: ${error}`);
+        }
+        console.log(`RobotISS powered OFF (${date})`);
     });
 }
 displayAPIISSInformation();
