@@ -27,24 +27,27 @@ async function fetchIssLocation() {
     if (response.ok) {
       const location: IssJsonObject = await response.json();
       if (location) {
-        const timestamp = Number(location.timestamp);
-        let date = new Date(timestamp * 1000);
-        let dateFormat = `${date.toLocaleDateString()}`;
-        let HourFormat = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
-        let currentLocation = new issLocation({
-          longitude: location.iss_position.longitude,
-          latitude: location.iss_position.latitude,
-          timestamp: location.timestamp,
-          date: dateFormat,
-          hour: HourFormat,
-        });
-        await currentLocation.save();
-        await mongoose.disconnect();
+        await saveDataFromISS(location);
       }
     }
   } catch (error) {
     console.log(error);
   }
+}
+
+async function saveDataFromISS(location: IssJsonObject) {
+  const timestamp = Number(location.timestamp);
+  let date = new Date(timestamp * 1000);
+  let dateFormat = `${date.toLocaleDateString()}`;
+  let HourFormat = `${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+  let currentLocation = new issLocation({
+    longitude: location.iss_position.longitude,
+    latitude: location.iss_position.latitude,
+    timestamp: location.timestamp,
+    date: dateFormat,
+    hour: HourFormat,
+  });
+  await currentLocation.save();
 }
 
 async function displayAPIISSInformation() {
