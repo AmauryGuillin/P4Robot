@@ -16,7 +16,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
-import { animalsLatinNames } from "./Tables/tables.js";
+import { animalsLatinNames } from "../Tables/tables.js";
 import mongoose from "mongoose";
 mongoose.connection.setMaxListeners(0);
 class AnimalObject {

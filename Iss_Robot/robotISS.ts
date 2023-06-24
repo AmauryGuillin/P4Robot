@@ -8,7 +8,7 @@
 */
 
 import mongoose from "mongoose";
-import { IssJsonObject } from "./Interfaces/interfaces.js";
+import { IssJsonObject } from "../Interfaces/interfaces.js";
 
 const issLocationSchema = new mongoose.Schema({
   longitude: String,

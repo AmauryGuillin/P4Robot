@@ -8,7 +8,7 @@
 ---------------------------------------------------
 */
 
-import { countriesToFetch } from "./Tables/tables.js";
+import { countriesToFetch } from "../Tables/tables.js";
 import mongoose from "mongoose";
 
 const CountrySchema = new mongoose.Schema({

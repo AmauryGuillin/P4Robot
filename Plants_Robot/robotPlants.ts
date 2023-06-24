@@ -8,7 +8,7 @@
 ---------------------------------------------------
 */
 
-import { plantsLatinNames } from "./Tables/tables.js";
+import { plantsLatinNames } from "../Tables/tables.js";
 import mongoose from "mongoose";
 
 class PlantObject {

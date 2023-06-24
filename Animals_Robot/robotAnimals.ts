@@ -8,7 +8,7 @@
 ---------------------------------------------------
 */
 
-import { animalsLatinNames } from "./Tables/tables.js";
+import { animalsLatinNames } from "../Tables/tables.js";
 import mongoose, { mongo } from "mongoose";
 
 mongoose.connection.setMaxListeners(0);
