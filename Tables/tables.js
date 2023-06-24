@@ -1,3 +1,4 @@
+// This table store all the countries
 export const contriesToFetch = [
     "Afghanistan",
     "Albania",
@@ -195,6 +196,7 @@ export const contriesToFetch = [
     "Zambia",
     "Zimbabwe",
 ];
+// There is currently 467 animal species in this array
 export const animalsLatinNames = [
     "Canis lupus familiaris",
     "Felis catus",
@@ -674,6 +676,7 @@ export const animalsLatinNames = [
     "Hippocampus",
     "Mustela ermine",
 ];
+// There is currently 906 plant species in this array
 export const plantsLatinNames = [
     "Abelia",
     "Abelmoschus esculentus",

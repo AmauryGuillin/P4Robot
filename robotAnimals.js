@@ -158,18 +158,19 @@ function createAnimalObject(animal) {
 }
 function displayAnimalsInfo() {
     return __awaiter(this, void 0, void 0, function* () {
-        console.log(`RobotAnimals powered ON`);
+        const date = new Date();
+        console.log(`RobotAnimals powered ON (The ${date.getUTCDate()}/${date.getUTCMonth()}/${date.getFullYear()} at ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()})`);
         try {
             mongoose.connect("mongodb://127.0.0.1:27017/test");
             for (const animalToFetch of animalsLatinNames) {
                 yield fetchAnimals(animalToFetch);
             }
-            console.log(`RobotAnimals powered OFF`);
             mongoose.disconnect();
         }
         catch (error) {
             console.error(`An error occurred while connecting to MongoDB: ${error}`);
         }
+        console.log(`RobotAnimals powered OFF (The ${date.getUTCDate()}/${date.getUTCMonth()}/${date.getFullYear()} at ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()})`);
     });
 }
 displayAnimalsInfo();
