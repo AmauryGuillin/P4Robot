@@ -1,9 +1,9 @@
 /*
 ------------PLAN D'ACTION POUR CE ROBOT------------
 - Recupérer une liste de tous les animaux avec leur noms latin. ✅
-- Créer un objet dans lequel ranger chaque groupe d'informaation sur les animaux ❌
-- Faire tourner le robot sur cette liste afain de récupérer chaque animal indépendanment ❌
-- Ranger tous les animaux en base de donnée Mongo ❌
+- Créer un objet dans lequel ranger chaque groupe d'informaation sur les animaux ✅
+- Faire tourner le robot sur cette liste afain de récupérer chaque animal indépendanment ✅
+- Ranger tous les animaux en base de donnée Mongo ✅
 - Lancer le robot tous les 1er du mois ❌
 ---------------------------------------------------
 */
@@ -17,6 +17,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 import { animalsLatinNames } from "./Tables/tables.js";
+import mongoose from "mongoose";
+mongoose.connection.setMaxListeners(0);
 class AnimalObject {
     constructor(basisOfRecord, scientificName, kingdom, phylum, order, family, genus, species, genericName, specificEpithet, decimalLongitude, decimalLatitude, continent, year, month, day, eventDate, animalImageInfo, locationCountryName, preciseLocationWithinCountry, animalClass, country, taxonId) {
         this.basisOfRecord = basisOfRecord;
@@ -44,7 +46,32 @@ class AnimalObject {
         this.taxonId = taxonId;
     }
 }
-const animalsTab = [];
+const animalSchema = new mongoose.Schema({
+    basisOfRecord: String,
+    scientificName: String,
+    kingdom: String,
+    phylum: String,
+    order: String,
+    family: String,
+    genus: String,
+    species: String,
+    genericName: String,
+    specificEpithet: String,
+    decimalLongitude: Number,
+    decimalLatitude: Number,
+    continent: String,
+    year: Number,
+    month: Number,
+    day: Number,
+    eventDate: String,
+    animalImageInfo: Object,
+    locationCountryName: Object,
+    preciseLocationWithinCountry: Object,
+    animalClass: String,
+    country: String,
+    taxonId: String,
+});
+const animalModel = mongoose.model("Animals", animalSchema);
 function fetchAnimals(animalToFetch) {
     return __awaiter(this, void 0, void 0, function* () {
         let url = `https://api.gbif.org/v1/occurrence/search?mediaType=StillImage&q=${animalToFetch}`;
@@ -55,26 +82,95 @@ function fetchAnimals(animalToFetch) {
                 if (animals && animals.results && animals.results.length > 0) {
                     for (let i = 0; i <= animals.results.length; i++) {
                         const animal = animals.results[i];
-                        let currentAnimal = new AnimalObject(animal.basisOfRecord, animal.scientificName, animal.kingdom, animal.phylum, animal.order, animal.family, animal.genus, animal.species, animal.genericName, animal.specificEpithet, animal.decimalLongitude, animal.decimalLatitude, animal.continent, animal.year, animal.month, animal.day, animal.eventDate, "", animal.gadm.level0, animal.gadm.level3, animal.class, animal.country, animal.taxonID);
-                        animal.media.forEach((currentImageInfo) => {
-                            currentAnimal.animalImageInfo = currentImageInfo;
-                        });
-                        animalsTab.push(currentAnimal);
+                        if (animal &&
+                            animal.basisOfRecord != undefined &&
+                            animal.basisOfRecord === "HUMAN_OBSERVATION") {
+                            let currentAnimal = createAnimalObject(animal);
+                            yield saveAnimalObject(currentAnimal);
+                        }
                     }
                 }
             }
         }
         catch (error) {
-            console.error(`An error occured when fetching data from an animal : ${error}`);
+            console.error(`An error occured when fetching data from the animal named ${animalToFetch} --> ${error}`);
         }
     });
 }
+function saveAnimalObject(currentAnimal) {
+    return __awaiter(this, void 0, void 0, function* () {
+        const currentAnimalStorage = new animalModel({
+            basisOfRecord: currentAnimal.basisOfRecord,
+            scientificName: currentAnimal.scientificName,
+            kingdom: currentAnimal.kingdom,
+            phylum: currentAnimal.phylum,
+            order: currentAnimal.order,
+            family: currentAnimal.family,
+            genus: currentAnimal.genus,
+            species: currentAnimal.species,
+            genericName: currentAnimal.genericName,
+            specificEpithet: currentAnimal.specificEpithet,
+            decimalLongitude: currentAnimal.decimalLongitude,
+            decimalLatitude: currentAnimal.decimalLatitude,
+            continent: currentAnimal.continent,
+            year: currentAnimal.year,
+            month: currentAnimal.month,
+            day: currentAnimal.day,
+            eventDate: currentAnimal.eventDate,
+            animalImageInfo: currentAnimal.animalImageInfo,
+            locationCountryName: currentAnimal.locationCountryName,
+            preciseLocationWithinCountry: currentAnimal.preciseLocationWithinCountry,
+            animalClass: currentAnimal.animalClass,
+            country: currentAnimal.country,
+            taxonId: currentAnimal.taxonId,
+        });
+        yield currentAnimalStorage.save();
+    });
+}
+function createAnimalObject(animal) {
+    let currentAnimal = new AnimalObject();
+    (currentAnimal.basisOfRecord = animal.basisOfRecord),
+        (currentAnimal.scientificName = animal.scientificName),
+        (currentAnimal.kingdom = animal.kingdom),
+        (currentAnimal.phylum = animal.phylum),
+        (currentAnimal.order = animal.order),
+        (currentAnimal.family = animal.family),
+        (currentAnimal.genus = animal.genus),
+        (currentAnimal.species = animal.species),
+        (currentAnimal.genericName = animal.genericName),
+        (currentAnimal.specificEpithet = animal.specificEpithet),
+        (currentAnimal.decimalLongitude = animal.decimalLongitude),
+        (currentAnimal.decimalLatitude = animal.decimalLatitude),
+        (currentAnimal.continent = animal.continent),
+        (currentAnimal.year = animal.year),
+        (currentAnimal.month = animal.month),
+        (currentAnimal.day = animal.day),
+        (currentAnimal.eventDate = animal.eventDate),
+        (currentAnimal.locationCountryName = animal.gadm.level0),
+        (currentAnimal.preciseLocationWithinCountry = animal.gadm.level3),
+        (currentAnimal.animalClass = animal.class),
+        (currentAnimal.country = animal.country),
+        (currentAnimal.taxonId = animal.taxonID);
+    animal.media.forEach((currentImageInfo) => {
+        currentAnimal.animalImageInfo = currentImageInfo;
+    });
+    return currentAnimal;
+}
 function displayAnimalsInfo() {
     return __awaiter(this, void 0, void 0, function* () {
-        animalsLatinNames.forEach((animalToFetch) => __awaiter(this, void 0, void 0, function* () {
-            yield fetchAnimals(animalToFetch);
-            console.log(animalsTab);
-        }));
+        const date = new Date();
+        console.log(`RobotAnimals powered ON (The ${date.getUTCDate()}/${date.getUTCMonth()}/${date.getFullYear()} at ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()})`);
+        try {
+            mongoose.connect("mongodb://127.0.0.1:27017/test");
+            for (const animalToFetch of animalsLatinNames) {
+                yield fetchAnimals(animalToFetch);
+            }
+            mongoose.disconnect();
+        }
+        catch (error) {
+            console.error(`An error occurred while connecting to MongoDB: ${error}`);
+        }
+        console.log(`RobotAnimals powered OFF (The ${date.getUTCDate()}/${date.getUTCMonth()}/${date.getFullYear()} at ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()})`);
     });
 }
 displayAnimalsInfo();
