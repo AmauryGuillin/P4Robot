@@ -29,6 +29,7 @@ const CountrySchema = new mongoose.Schema({
     name: String,
     official: String,
     nativeNameOfficial: String,
+    nativeNameCommon: String,
     cca2: String,
     currencieName: String,
     currencieSymbol: String,
@@ -55,9 +56,7 @@ const CountrySchema = new mongoose.Schema({
     capitalCouldPercentage: Number,
 });
 class CountryObject {
-    constructor(name, official, nativeNameOfficial, nativeNameCommon, cca2, currencieName, currencieSymbol, capital = [], region, subregion, language, latlng = [], islandlocked, borders = [], area, flag, population, gini, carside, startOfWeek, capitalLocation = [], 
-    //meteo part
-    capitalMainDescription, capitalTemperature, capitalHumidity, capitalPressure, capitalWindSpeed, capitalWindDirection, capitalCloudPercentage) {
+    constructor(name, official, nativeNameOfficial, nativeNameCommon, cca2, currencieName, currencieSymbol, capital, region, subregion, language, latlng = [], islandlocked, borders = [], area, flag, population, gini, carside, startOfWeek, capitalLocation = [], capitalMainDescription, capitalTemperature, capitalHumidity, capitalPressure, capitalWindSpeed, capitalWindDirection, capitalCloudPercentage) {
         this.name = name;
         this.official = official;
         this.nativeNameOfficial = nativeNameOfficial;
@@ -97,10 +96,23 @@ function fetchACountry(countryToFetch) {
             if (response.ok) {
                 const countries = yield response.json();
                 if (countries && countries.length > 0) {
-                    for (let i = 0; i < countries.length; i++) {
-                        const country = countries[i];
+                    for (const country of countries) {
+                        if (country.name.common === "Macau") {
+                            console.log("Skipping Macau");
+                            continue;
+                        }
+                        const existingCountry = yield countriesToStore.findOne({
+                            name: country.name.common,
+                        });
                         let currentCountry = yield createCountryObject(country);
-                        yield saveCountryObject(currentCountry);
+                        if (existingCountry) {
+                            saveAnExistingCountry(existingCountry, currentCountry);
+                            console.log(`Country ${country.name.common} has been updated`);
+                        }
+                        else {
+                            yield saveCountryObject(currentCountry);
+                            console.log(`Country ${country.name.common} has been added`);
+                        }
                     }
                 }
             }
@@ -110,12 +122,48 @@ function fetchACountry(countryToFetch) {
         }
     });
 }
+function saveAnExistingCountry(existingCountry, currentCountry) {
+    return __awaiter(this, void 0, void 0, function* () {
+        existingCountry.name = currentCountry.name;
+        existingCountry.official = currentCountry.official;
+        existingCountry.nativeNameOfficial = currentCountry.nativeNameOfficial;
+        existingCountry.nativeNameCommon = currentCountry.nativeNameCommon;
+        existingCountry.cca2 = currentCountry.cca2;
+        existingCountry.currencieName = currentCountry.currencieName;
+        existingCountry.currencieSymbol = currentCountry.currencieSymbol;
+        existingCountry.capital = currentCountry.capital;
+        existingCountry.region = currentCountry.region;
+        existingCountry.subregion = currentCountry.subregion;
+        existingCountry.language = currentCountry.language;
+        existingCountry.latlng = currentCountry.latlng;
+        existingCountry.islandlocked = currentCountry.islandlocked;
+        existingCountry.borders = currentCountry.borders;
+        existingCountry.area = currentCountry.area;
+        existingCountry.flag = currentCountry.flag;
+        existingCountry.population = currentCountry.population;
+        existingCountry.gini = currentCountry.gini;
+        existingCountry.carside = currentCountry.carside;
+        existingCountry.startOfWeek = currentCountry.startOfWeek;
+        existingCountry.capitalLocation = currentCountry.capitalLocation;
+        existingCountry.capitalMainDescription =
+            currentCountry.capitalMainDescription;
+        existingCountry.capitalTemperature = currentCountry.capitalTemperature;
+        existingCountry.capitalHumidity = currentCountry.capitalHumidity;
+        existingCountry.capitalPressure = currentCountry.capitalPressure;
+        existingCountry.capitalWindSpeed = currentCountry.capitalWindSpeed;
+        existingCountry.capitalWindDirection = currentCountry.capitalWindDirection;
+        existingCountry.capitalCouldPercentage =
+            currentCountry.capitalCloudPercentage;
+        yield existingCountry.save();
+    });
+}
 function saveCountryObject(currentCountry) {
     return __awaiter(this, void 0, void 0, function* () {
         let countryToAdd = new countriesToStore({
             name: currentCountry.name,
             official: currentCountry.official,
             nativeNameOfficial: currentCountry.nativeNameOfficial,
+            nativeNameCommon: currentCountry.nativeNameCommon,
             cca2: currentCountry.cca2,
             currencieName: currentCountry.currencieName,
             currencieSymbol: currentCountry.currencieSymbol,
@@ -155,7 +203,7 @@ function createCountryObject(country) {
         currentCountry.subregion = country.subregion;
         currentCountry.islandlocked = country.landlocked;
         currentCountry.area = country.area;
-        currentCountry.flag = country.flag;
+        currentCountry.flag = country.flags.png;
         currentCountry.population = country.population;
         currentCountry.carside = country.car.side;
         currentCountry.startOfWeek = country.startOfWeek;
@@ -208,7 +256,7 @@ function createCountryObject(country) {
             if (responseMeteo) {
                 currentCountry.capitalMainDescription =
                     currentMeteo.weather[0].description;
-                (currentCountry.capitalTemperature = currentMeteo.main.temp - 273), 15;
+                currentCountry.capitalTemperature = currentMeteo.main.temp - 273.15;
                 currentCountry.capitalHumidity = currentMeteo.main.humidity;
                 currentCountry.capitalPressure = currentMeteo.main.pressure;
                 currentCountry.capitalWindSpeed = currentMeteo.wind.speed;
@@ -224,11 +272,11 @@ function displayCountriesInfo() {
         const date = new Date();
         console.log(`RobotCountries powered ON (${date})`);
         try {
-            mongoose.connect("mongodb://127.0.0.1:27017/test");
+            yield mongoose.connect("mongodb://127.0.0.1:27017/test");
             for (const country of countriesToFetch) {
                 yield fetchACountry(country);
             }
-            mongoose.disconnect();
+            yield mongoose.disconnect();
         }
         catch (error) {
             console.error(`An error occured while connecting to MongoDB: ${error}`);
