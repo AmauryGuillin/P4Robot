@@ -3,15 +3,8 @@
 - Recupérer une liste de tous les pays. ✅
 - Créer un objet dans lequel ranger chaque pays ✅
 - Faire tourner le robot sur cette liste afain de récupérer chaque pays indépendanment ✅
-- Ranger tous les pays en base de donnée Mongo ❌
+- Ranger tous les pays en base de donnée Mongo ✅
 - Lancer le robot tous les 1er du mois ❌
-
-A FAIRE --
-
--> Pour certains noms de pays, existance d'un tableau > 1 ittération
-SOLUTIONS :
-1) boucler sur chaque ittération
-2) Bien mettre à jour le nom des pays dans le tableau pour que le programme comprenne bien
 ---------------------------------------------------
 */
 
