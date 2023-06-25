@@ -76,7 +76,7 @@ async function fetchAnimals(animalToFetch: string) {
     if (response.ok) {
       const animals = await response.json();
       if (animals && animals.results && animals.results.length > 0) {
-        for (let i: number = 0; i <= animals.results.length; i++) {
+        for (let i = 0; i <= animals.results.length; i++) {
           const animal = animals.results[i];
           if (
             animal &&
