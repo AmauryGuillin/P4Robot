@@ -55,7 +55,7 @@ const CountrySchema = new mongoose.Schema({
     capitalCouldPercentage: Number,
 });
 class CountryObject {
-    constructor(name, official, nativeNameOfficial, nativeNameCommon, cca2, currencieName, currencieSymbol, capital, region, subregion, language, latlng, islandlocked, borders, area, flag, population, gini, carside, startOfWeek, capitalLocation, 
+    constructor(name, official, nativeNameOfficial, nativeNameCommon, cca2, currencieName, currencieSymbol, capital = [], region, subregion, language, latlng = [], islandlocked, borders = [], area, flag, population, gini, carside, startOfWeek, capitalLocation = [], 
     //meteo part
     capitalMainDescription, capitalTemperature, capitalHumidity, capitalPressure, capitalWindSpeed, capitalWindDirection, capitalCloudPercentage) {
         this.name = name;
@@ -91,15 +91,17 @@ class CountryObject {
 const countriesToStore = mongoose.model("Countries", CountrySchema);
 function fetchACountry(countryToFetch) {
     return __awaiter(this, void 0, void 0, function* () {
-        let currentCountry = new CountryObject("", "", "", "", "", "", "", "", "", "", "", [], false, [], 0, "", 0, 0, "", "", [], "", 0, 0, 0, 0, 0, 0);
         const url = `https://restcountries.com/v3.1/name/${countryToFetch}`;
         try {
             const response = yield fetch(url);
             if (response.ok) {
                 const countries = yield response.json();
                 if (countries && countries.length > 0) {
-                    yield createCountryObject(countries, currentCountry);
-                    yield saveCountryObject(currentCountry);
+                    for (let i = 0; i < countries.length; i++) {
+                        const country = countries[i];
+                        let currentCountry = yield createCountryObject(country);
+                        yield saveCountryObject(currentCountry);
+                    }
                 }
             }
         }
@@ -142,13 +144,13 @@ function saveCountryObject(currentCountry) {
         yield countryToAdd.save();
     });
 }
-function createCountryObject(countries, currentCountry) {
+function createCountryObject(country) {
     return __awaiter(this, void 0, void 0, function* () {
-        const country = countries[0];
+        let currentCountry = new CountryObject();
         currentCountry.name = country.name.common;
         currentCountry.official = country.name.official;
         currentCountry.cca2 = country.cca2;
-        currentCountry.capital = country.capital[0];
+        currentCountry.capital = country.capital ? country.capital[0] : "";
         currentCountry.region = country.region;
         currentCountry.subregion = country.subregion;
         currentCountry.islandlocked = country.landlocked;
@@ -214,6 +216,7 @@ function createCountryObject(countries, currentCountry) {
                 currentCountry.capitalCloudPercentage = currentMeteo.clouds.all;
             }
         }
+        return currentCountry;
     });
 }
 function displayCountriesInfo() {

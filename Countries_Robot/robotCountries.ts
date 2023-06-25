@@ -50,80 +50,52 @@ const CountrySchema = new mongoose.Schema({
 
 class CountryObject {
   constructor(
-    public name: string,
-    public official: string,
-    public nativeNameOfficial: string,
-    public nativeNameCommon: string,
-    public cca2: string,
-    public currencieName: string,
-    public currencieSymbol: string,
-    public capital: string,
-    public region: string,
-    public subregion: string,
-    public language: string,
-    public latlng: number[],
-    public islandlocked: boolean,
-    public borders: string[],
-    public area: number,
-    public flag: string,
-    public population: number,
-    public gini: number,
-    public carside: string,
-    public startOfWeek: string,
-    public capitalLocation: number[],
+    public name?: string,
+    public official?: string,
+    public nativeNameOfficial?: string,
+    public nativeNameCommon?: string,
+    public cca2?: string,
+    public currencieName?: string,
+    public currencieSymbol?: string,
+    public capital: string[] = [],
+    public region?: string,
+    public subregion?: string,
+    public language?: string,
+    public latlng: number[] = [],
+    public islandlocked?: boolean,
+    public borders: string[] = [],
+    public area?: number,
+    public flag?: string,
+    public population?: number,
+    public gini?: number,
+    public carside?: string,
+    public startOfWeek?: string,
+    public capitalLocation: number[] = [],
     //meteo part
-    public capitalMainDescription: string,
-    public capitalTemperature: number,
-    public capitalHumidity: number,
-    public capitalPressure: number,
-    public capitalWindSpeed: number,
-    public capitalWindDirection: number,
-    public capitalCloudPercentage: number
+    public capitalMainDescription?: string,
+    public capitalTemperature?: number,
+    public capitalHumidity?: number,
+    public capitalPressure?: number,
+    public capitalWindSpeed?: number,
+    public capitalWindDirection?: number,
+    public capitalCloudPercentage?: number
   ) {}
 }
 
 const countriesToStore = mongoose.model("Countries", CountrySchema);
 
 async function fetchACountry(countryToFetch: string) {
-  let currentCountry = new CountryObject(
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    "",
-    [],
-    false,
-    [],
-    0,
-    "",
-    0,
-    0,
-    "",
-    "",
-    [],
-    "",
-    0,
-    0,
-    0,
-    0,
-    0,
-    0
-  );
-
   const url = `https://restcountries.com/v3.1/name/${countryToFetch}`;
   try {
     const response = await fetch(url);
     if (response.ok) {
       const countries = await response.json();
       if (countries && countries.length > 0) {
-        await createCountryObject(countries, currentCountry);
-        await saveCountryObject(currentCountry);
+        for (let i = 0; i < countries.length; i++) {
+          const country = countries[i];
+          let currentCountry = await createCountryObject(country);
+          await saveCountryObject(currentCountry);
+        }
       }
     }
   } catch (error) {
@@ -166,16 +138,13 @@ async function saveCountryObject(currentCountry: CountryObject) {
   await countryToAdd.save();
 }
 
-async function createCountryObject(
-  countries: any,
-  currentCountry: CountryObject
-) {
-  const country = countries[0];
+async function createCountryObject(country: any) {
+  let currentCountry = new CountryObject();
 
   currentCountry.name = country.name.common;
   currentCountry.official = country.name.official;
   currentCountry.cca2 = country.cca2;
-  currentCountry.capital = country.capital[0];
+  currentCountry.capital = country.capital ? country.capital[0] : "";
   currentCountry.region = country.region;
   currentCountry.subregion = country.subregion;
   currentCountry.islandlocked = country.landlocked;
@@ -232,6 +201,7 @@ async function createCountryObject(
   }
 
   const apiKey: string = "f0ec6d4846a480ebbdb11409e8119ca9";
+
   const capitalLongitude: number = currentCountry.capitalLocation[1];
   const capitalLattitude: number = currentCountry.capitalLocation[0];
   const urlMeto: string = `https://api.openweathermap.org/data/2.5/weather?lat=${capitalLattitude}&lon=${capitalLongitude}&appid=${apiKey}`;
@@ -250,6 +220,8 @@ async function createCountryObject(
       currentCountry.capitalCloudPercentage = currentMeteo.clouds.all;
     }
   }
+
+  return currentCountry;
 }
 
 async function displayCountriesInfo() {
