@@ -9,7 +9,7 @@
 */
 
 import { animalsLatinNames } from "../Tables/tables.js";
-import mongoose, { mongo } from "mongoose";
+import mongoose from "mongoose";
 
 mongoose.connection.setMaxListeners(0);
 
@@ -83,8 +83,17 @@ async function fetchAnimals(animalToFetch: string) {
             animal.basisOfRecord != undefined &&
             animal.basisOfRecord === "HUMAN_OBSERVATION"
           ) {
+            const existingAnimalItem = await animalModel.findOne({
+              scientificName: animal.scientificName,
+            });
             let currentAnimal = createAnimalObject(animal);
-            await saveAnimalObject(currentAnimal);
+            if (existingAnimalItem) {
+              await saveAnExistingAnimal(existingAnimalItem, currentAnimal);
+              console.log(`Animal "${animal.scientificName}" has been updated`);
+            } else {
+              await saveAnimalObject(currentAnimal);
+              console.log(`Animal "${animal.scientificName}" has been added`);
+            }
           }
         }
       }
@@ -94,6 +103,92 @@ async function fetchAnimals(animalToFetch: string) {
       `An error occured when fetching data from the animal named ${animalToFetch} --> ${error}`
     );
   }
+}
+
+async function saveAnExistingAnimal(
+  existingAnimalItem: mongoose.Document<
+    unknown,
+    {},
+    {
+      basisOfRecord?: string | undefined;
+      scientificName?: string | undefined;
+      kingdom?: string | undefined;
+      phylum?: string | undefined;
+      order?: string | undefined;
+      family?: string | undefined;
+      genus?: string | undefined;
+      species?: string | undefined;
+      genericName?: string | undefined;
+      specificEpithet?: string | undefined;
+      decimalLongitude?: number | undefined;
+      decimalLatitude?: number | undefined;
+      continent?: string | undefined;
+      year?: number | undefined;
+      month?: number | undefined;
+      day?: number | undefined;
+      eventDate?: string | undefined;
+      animalImageInfo?: any;
+      locationCountryName?: any;
+      preciseLocationWithinCountry?: any;
+      animalClass?: string | undefined;
+      country?: string | undefined;
+      taxonId?: string | undefined;
+    }
+  > &
+    Omit<
+      {
+        basisOfRecord?: string | undefined;
+        scientificName?: string | undefined;
+        kingdom?: string | undefined;
+        phylum?: string | undefined;
+        order?: string | undefined;
+        family?: string | undefined;
+        genus?: string | undefined;
+        species?: string | undefined;
+        genericName?: string | undefined;
+        specificEpithet?: string | undefined;
+        decimalLongitude?: number | undefined;
+        decimalLatitude?: number | undefined;
+        continent?: string | undefined;
+        year?: number | undefined;
+        month?: number | undefined;
+        day?: number | undefined;
+        eventDate?: string | undefined;
+        animalImageInfo?: any;
+        locationCountryName?: any;
+        preciseLocationWithinCountry?: any;
+        animalClass?: string | undefined;
+        country?: string | undefined;
+        taxonId?: string | undefined;
+      } & { _id: mongoose.Types.ObjectId },
+      never
+    >,
+  currentAnimal: AnimalObject
+) {
+  existingAnimalItem.basisOfRecord = currentAnimal.basisOfRecord;
+  existingAnimalItem.scientificName = currentAnimal.scientificName;
+  existingAnimalItem.kingdom = currentAnimal.kingdom;
+  existingAnimalItem.phylum = currentAnimal.phylum;
+  existingAnimalItem.order = currentAnimal.order;
+  existingAnimalItem.family = currentAnimal.family;
+  existingAnimalItem.genus = currentAnimal.genus;
+  existingAnimalItem.genericName = currentAnimal.genericName;
+  existingAnimalItem.specificEpithet = currentAnimal.specificEpithet;
+  existingAnimalItem.decimalLatitude = currentAnimal.decimalLatitude;
+  existingAnimalItem.decimalLongitude = currentAnimal.decimalLongitude;
+  existingAnimalItem.continent = currentAnimal.continent;
+  existingAnimalItem.year = currentAnimal.year;
+  existingAnimalItem.month = currentAnimal.month;
+  existingAnimalItem.day = currentAnimal.day;
+  existingAnimalItem.eventDate = currentAnimal.eventDate;
+  existingAnimalItem.animalImageInfo = currentAnimal.animalImageInfo;
+  existingAnimalItem.locationCountryName = currentAnimal.locationCountryName;
+  existingAnimalItem.preciseLocationWithinCountry =
+    currentAnimal.preciseLocationWithinCountry;
+  existingAnimalItem.animalClass = currentAnimal.animalClass;
+  existingAnimalItem.country = currentAnimal.country;
+  existingAnimalItem.taxonId = currentAnimal.taxonId;
+  await existingAnimalItem.save();
 }
 
 async function saveAnimalObject(currentAnimal: AnimalObject) {

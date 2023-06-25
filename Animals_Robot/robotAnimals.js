@@ -85,8 +85,18 @@ function fetchAnimals(animalToFetch) {
                         if (animal &&
                             animal.basisOfRecord != undefined &&
                             animal.basisOfRecord === "HUMAN_OBSERVATION") {
+                            const existingAnimalItem = yield animalModel.findOne({
+                                scientificName: animal.scientificName,
+                            });
                             let currentAnimal = createAnimalObject(animal);
-                            yield saveAnimalObject(currentAnimal);
+                            if (existingAnimalItem) {
+                                yield saveAnExistingAnimal(existingAnimalItem, currentAnimal);
+                                console.log(`Animal "${animal.scientificName}" has been updated`);
+                            }
+                            else {
+                                yield saveAnimalObject(currentAnimal);
+                                console.log(`Animal "${animal.scientificName}" has been added`);
+                            }
                         }
                     }
                 }
@@ -95,6 +105,34 @@ function fetchAnimals(animalToFetch) {
         catch (error) {
             console.error(`An error occured when fetching data from the animal named ${animalToFetch} --> ${error}`);
         }
+    });
+}
+function saveAnExistingAnimal(existingAnimalItem, currentAnimal) {
+    return __awaiter(this, void 0, void 0, function* () {
+        existingAnimalItem.basisOfRecord = currentAnimal.basisOfRecord;
+        existingAnimalItem.scientificName = currentAnimal.scientificName;
+        existingAnimalItem.kingdom = currentAnimal.kingdom;
+        existingAnimalItem.phylum = currentAnimal.phylum;
+        existingAnimalItem.order = currentAnimal.order;
+        existingAnimalItem.family = currentAnimal.family;
+        existingAnimalItem.genus = currentAnimal.genus;
+        existingAnimalItem.genericName = currentAnimal.genericName;
+        existingAnimalItem.specificEpithet = currentAnimal.specificEpithet;
+        existingAnimalItem.decimalLatitude = currentAnimal.decimalLatitude;
+        existingAnimalItem.decimalLongitude = currentAnimal.decimalLongitude;
+        existingAnimalItem.continent = currentAnimal.continent;
+        existingAnimalItem.year = currentAnimal.year;
+        existingAnimalItem.month = currentAnimal.month;
+        existingAnimalItem.day = currentAnimal.day;
+        existingAnimalItem.eventDate = currentAnimal.eventDate;
+        existingAnimalItem.animalImageInfo = currentAnimal.animalImageInfo;
+        existingAnimalItem.locationCountryName = currentAnimal.locationCountryName;
+        existingAnimalItem.preciseLocationWithinCountry =
+            currentAnimal.preciseLocationWithinCountry;
+        existingAnimalItem.animalClass = currentAnimal.animalClass;
+        existingAnimalItem.country = currentAnimal.country;
+        existingAnimalItem.taxonId = currentAnimal.taxonId;
+        yield existingAnimalItem.save();
     });
 }
 function saveAnimalObject(currentAnimal) {
