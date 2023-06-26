@@ -85,8 +85,18 @@ function fetchPlants(plantToFetch) {
                             if (plant &&
                                 plant.basisOfRecord != undefined &&
                                 plant.basisOfRecord === "HUMAN_OBSERVATION") {
+                                const existingPlantItem = yield plantModel.findOne({
+                                    scientificName: plant.scientificName,
+                                });
                                 let currentPlant = createPlantObject(plant);
-                                yield savePlantObject(currentPlant);
+                                if (existingPlantItem) {
+                                    yield saveAnExistingPlant(existingPlantItem, currentPlant);
+                                    console.log(`Plant "${plant.scientificName}" has been updated`);
+                                }
+                                else {
+                                    yield savePlantObject(currentPlant);
+                                    console.log(`Plant "${plant.scientificName}" has been added`);
+                                }
                             }
                         }
                     }
@@ -96,6 +106,34 @@ function fetchPlants(plantToFetch) {
         catch (error) {
             console.error(`An error occured when fetching data from the plant named ${plantToFetch} --> ${error}`);
         }
+    });
+}
+function saveAnExistingPlant(existingPlantItem, currentPlant) {
+    return __awaiter(this, void 0, void 0, function* () {
+        existingPlantItem.basisOfRecord = currentPlant.basisOfRecord;
+        existingPlantItem.scientificName = currentPlant.scientificName;
+        existingPlantItem.kingdom = currentPlant.kingdom;
+        existingPlantItem.phylum = currentPlant.phylum;
+        existingPlantItem.order = currentPlant.order;
+        existingPlantItem.family = currentPlant.family;
+        existingPlantItem.genus = currentPlant.genus;
+        existingPlantItem.genericName = currentPlant.genericName;
+        existingPlantItem.specificEpithet = currentPlant.specificEpithet;
+        existingPlantItem.decimalLatitude = currentPlant.decimalLatitude;
+        existingPlantItem.decimalLongitude = currentPlant.decimalLongitude;
+        existingPlantItem.continent = currentPlant.continent;
+        existingPlantItem.year = currentPlant.year;
+        existingPlantItem.month = currentPlant.month;
+        existingPlantItem.day = currentPlant.day;
+        existingPlantItem.eventDate = currentPlant.eventDate;
+        existingPlantItem.animalImageInfo = currentPlant.animalImageInfo;
+        existingPlantItem.locationCountryName = currentPlant.locationCountryName;
+        existingPlantItem.preciseLocationWithinCountry =
+            currentPlant.preciseLocationWithinCountry;
+        existingPlantItem.animalClass = currentPlant.animalClass;
+        existingPlantItem.country = currentPlant.country;
+        existingPlantItem.taxonId = currentPlant.taxonId;
+        yield existingPlantItem.save();
     });
 }
 function savePlantObject(currentPlant) {

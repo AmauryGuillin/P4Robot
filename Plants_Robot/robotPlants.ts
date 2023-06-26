@@ -82,8 +82,17 @@ async function fetchPlants(plantToFetch: string) {
               plant.basisOfRecord != undefined &&
               plant.basisOfRecord === "HUMAN_OBSERVATION"
             ) {
+              const existingPlantItem = await plantModel.findOne({
+                scientificName: plant.scientificName,
+              });
               let currentPlant = createPlantObject(plant);
-              await savePlantObject(currentPlant);
+              if (existingPlantItem) {
+                await saveAnExistingPlant(existingPlantItem, currentPlant);
+                console.log(`Plant "${plant.scientificName}" has been updated`);
+              } else {
+                await savePlantObject(currentPlant);
+                console.log(`Plant "${plant.scientificName}" has been added`);
+              }
             }
           }
         }
@@ -94,6 +103,92 @@ async function fetchPlants(plantToFetch: string) {
       `An error occured when fetching data from the plant named ${plantToFetch} --> ${error}`
     );
   }
+}
+
+async function saveAnExistingPlant(
+  existingPlantItem: mongoose.Document<
+    unknown,
+    {},
+    {
+      basisOfRecord?: string | undefined;
+      scientificName?: string | undefined;
+      kingdom?: string | undefined;
+      phylum?: string | undefined;
+      order?: string | undefined;
+      family?: string | undefined;
+      genus?: string | undefined;
+      species?: string | undefined;
+      genericName?: string | undefined;
+      specificEpithet?: string | undefined;
+      decimalLongitude?: number | undefined;
+      decimalLatitude?: number | undefined;
+      continent?: string | undefined;
+      year?: number | undefined;
+      month?: number | undefined;
+      day?: number | undefined;
+      eventDate?: string | undefined;
+      animalImageInfo?: any;
+      locationCountryName?: any;
+      preciseLocationWithinCountry?: any;
+      animalClass?: string | undefined;
+      country?: string | undefined;
+      taxonId?: string | undefined;
+    }
+  > &
+    Omit<
+      {
+        basisOfRecord?: string | undefined;
+        scientificName?: string | undefined;
+        kingdom?: string | undefined;
+        phylum?: string | undefined;
+        order?: string | undefined;
+        family?: string | undefined;
+        genus?: string | undefined;
+        species?: string | undefined;
+        genericName?: string | undefined;
+        specificEpithet?: string | undefined;
+        decimalLongitude?: number | undefined;
+        decimalLatitude?: number | undefined;
+        continent?: string | undefined;
+        year?: number | undefined;
+        month?: number | undefined;
+        day?: number | undefined;
+        eventDate?: string | undefined;
+        animalImageInfo?: any;
+        locationCountryName?: any;
+        preciseLocationWithinCountry?: any;
+        animalClass?: string | undefined;
+        country?: string | undefined;
+        taxonId?: string | undefined;
+      } & { _id: mongoose.Types.ObjectId },
+      never
+    >,
+  currentPlant: PlantObject
+) {
+  existingPlantItem.basisOfRecord = currentPlant.basisOfRecord;
+  existingPlantItem.scientificName = currentPlant.scientificName;
+  existingPlantItem.kingdom = currentPlant.kingdom;
+  existingPlantItem.phylum = currentPlant.phylum;
+  existingPlantItem.order = currentPlant.order;
+  existingPlantItem.family = currentPlant.family;
+  existingPlantItem.genus = currentPlant.genus;
+  existingPlantItem.genericName = currentPlant.genericName;
+  existingPlantItem.specificEpithet = currentPlant.specificEpithet;
+  existingPlantItem.decimalLatitude = currentPlant.decimalLatitude;
+  existingPlantItem.decimalLongitude = currentPlant.decimalLongitude;
+  existingPlantItem.continent = currentPlant.continent;
+  existingPlantItem.year = currentPlant.year;
+  existingPlantItem.month = currentPlant.month;
+  existingPlantItem.day = currentPlant.day;
+  existingPlantItem.eventDate = currentPlant.eventDate;
+  existingPlantItem.animalImageInfo = currentPlant.animalImageInfo;
+  existingPlantItem.locationCountryName = currentPlant.locationCountryName;
+  existingPlantItem.preciseLocationWithinCountry =
+    currentPlant.preciseLocationWithinCountry;
+  existingPlantItem.animalClass = currentPlant.animalClass;
+  existingPlantItem.country = currentPlant.country;
+  existingPlantItem.taxonId = currentPlant.taxonId;
+  await existingPlantItem.save();
 }
 
 async function savePlantObject(currentPlant: PlantObject) {
