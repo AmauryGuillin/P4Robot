@@ -66,7 +66,7 @@ const plantSchema = new mongoose.Schema({
 });
 
 const plantModel = mongoose.model("Plants", plantSchema);
-const fetchingLimit = 10000;
+const fetchingLimit = 50;
 
 async function fetchPlants(plantToFetch: string) {
   let url = `https://api.gbif.org/v1/occurrence/search?mediaType=StillImage&q=${plantToFetch}&limit=${fetchingLimit}`;
@@ -86,6 +86,9 @@ async function fetchPlants(plantToFetch: string) {
               const existingPlantItem = await plantModel.findOne({
                 scientificName: plant.scientificName,
                 eventDate: plant.eventDate,
+                year: plant.year,
+                month: plant.month,
+                day: plant.day,
               });
               let currentPlant = createPlantObject(plant);
               if (existingPlantItem) {
