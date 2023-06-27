@@ -68,9 +68,10 @@ const animalSchema = new mongoose.Schema({
 });
 
 const animalModel = mongoose.model("Animals", animalSchema);
+const fetchingLimit = 10000;
 
 async function fetchAnimals(animalToFetch: string) {
-  let url = `https://api.gbif.org/v1/occurrence/search?mediaType=StillImage&q=${animalToFetch}`;
+  let url = `https://api.gbif.org/v1/occurrence/search?mediaType=StillImage&q=${animalToFetch}&limit=${fetchingLimit}`;
   try {
     const response = await fetch(url);
     if (response.ok) {
@@ -85,6 +86,7 @@ async function fetchAnimals(animalToFetch: string) {
           ) {
             const existingAnimalItem = await animalModel.findOne({
               scientificName: animal.scientificName,
+              eventDate: animal.eventDate,
             });
             let currentAnimal = createAnimalObject(animal);
             if (existingAnimalItem) {

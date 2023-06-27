@@ -99,7 +99,7 @@ function fetchACountry(countryToFetch) {
                         });
                         let currentCountry = yield createCountryObject(country);
                         if (existingCountry) {
-                            saveAnExistingCountry(existingCountry, currentCountry);
+                            yield saveAnExistingCountry(existingCountry, currentCountry);
                             console.log(`Country ${country.name.common} has been updated`);
                         }
                         else {

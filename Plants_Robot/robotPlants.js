@@ -71,9 +71,10 @@ const plantSchema = new mongoose.Schema({
     taxonId: String,
 });
 const plantModel = mongoose.model("Plants", plantSchema);
+const fetchingLimit = 10000;
 function fetchPlants(plantToFetch) {
     return __awaiter(this, void 0, void 0, function* () {
-        let url = `https://api.gbif.org/v1/occurrence/search?mediaType=StillImage&q=${plantToFetch}`;
+        let url = `https://api.gbif.org/v1/occurrence/search?mediaType=StillImage&q=${plantToFetch}&limit=${fetchingLimit}`;
         try {
             const response = yield fetch(url);
             if (response.ok) {
@@ -87,6 +88,7 @@ function fetchPlants(plantToFetch) {
                                 plant.basisOfRecord === "HUMAN_OBSERVATION") {
                                 const existingPlantItem = yield plantModel.findOne({
                                     scientificName: plant.scientificName,
+                                    eventDate: plant.eventDate,
                                 });
                                 let currentPlant = createPlantObject(plant);
                                 if (existingPlantItem) {

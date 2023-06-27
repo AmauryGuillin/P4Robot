@@ -94,7 +94,7 @@ async function fetchACountry(countryToFetch: string) {
           });
           let currentCountry = await createCountryObject(country);
           if (existingCountry) {
-            saveAnExistingCountry(existingCountry, currentCountry);
+            await saveAnExistingCountry(existingCountry, currentCountry);
             console.log(`Country ${country.name.common} has been updated`);
           } else {
             await saveCountryObject(currentCountry);

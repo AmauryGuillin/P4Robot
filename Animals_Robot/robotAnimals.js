@@ -72,9 +72,10 @@ const animalSchema = new mongoose.Schema({
     taxonId: String,
 });
 const animalModel = mongoose.model("Animals", animalSchema);
+const fetchingLimit = 10000;
 function fetchAnimals(animalToFetch) {
     return __awaiter(this, void 0, void 0, function* () {
-        let url = `https://api.gbif.org/v1/occurrence/search?mediaType=StillImage&q=${animalToFetch}`;
+        let url = `https://api.gbif.org/v1/occurrence/search?mediaType=StillImage&q=${animalToFetch}&limit=${fetchingLimit}`;
         try {
             const response = yield fetch(url);
             if (response.ok) {
@@ -87,6 +88,7 @@ function fetchAnimals(animalToFetch) {
                             animal.basisOfRecord === "HUMAN_OBSERVATION") {
                             const existingAnimalItem = yield animalModel.findOne({
                                 scientificName: animal.scientificName,
+                                eventDate: animal.eventDate,
                             });
                             let currentAnimal = createAnimalObject(animal);
                             if (existingAnimalItem) {
