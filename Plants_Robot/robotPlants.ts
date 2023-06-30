@@ -33,7 +33,7 @@ class PlantObject {
     public animalImageInfo?: Object,
     public locationCountryName?: Object,
     public preciseLocationWithinCountry?: Object,
-    public animalClass?: string,
+    public vegetalClass?: string,
     public country?: string,
     public taxonId?: string
   ) {}
@@ -60,7 +60,7 @@ const plantSchema = new mongoose.Schema({
   animalImageInfo: Object,
   locationCountryName: Object,
   preciseLocationWithinCountry: Object,
-  animalClass: String,
+  vegetalClass: String,
   country: String,
   taxonId: String,
 });
@@ -135,7 +135,7 @@ async function saveAnExistingPlant(
       animalImageInfo?: any;
       locationCountryName?: any;
       preciseLocationWithinCountry?: any;
-      animalClass?: string | undefined;
+      vegetalClass?: string | undefined;
       country?: string | undefined;
       taxonId?: string | undefined;
     }
@@ -162,7 +162,7 @@ async function saveAnExistingPlant(
         animalImageInfo?: any;
         locationCountryName?: any;
         preciseLocationWithinCountry?: any;
-        animalClass?: string | undefined;
+        vegetalClass?: string | undefined;
         country?: string | undefined;
         taxonId?: string | undefined;
       } & { _id: mongoose.Types.ObjectId },
@@ -190,7 +190,7 @@ async function saveAnExistingPlant(
   existingPlantItem.locationCountryName = currentPlant.locationCountryName;
   existingPlantItem.preciseLocationWithinCountry =
     currentPlant.preciseLocationWithinCountry;
-  existingPlantItem.animalClass = currentPlant.animalClass;
+  existingPlantItem.vegetalClass = currentPlant.vegetalClass;
   existingPlantItem.country = currentPlant.country;
   existingPlantItem.taxonId = currentPlant.taxonId;
   await existingPlantItem.save();
@@ -218,7 +218,7 @@ async function savePlantObject(currentPlant: PlantObject) {
     animalImageInfo: currentPlant.animalImageInfo,
     locationCountryName: currentPlant.locationCountryName,
     preciseLocationWithinCountry: currentPlant.preciseLocationWithinCountry,
-    animalClass: currentPlant.animalClass,
+    vegetalClass: currentPlant.vegetalClass,
     country: currentPlant.country,
     taxonId: currentPlant.taxonId,
   });
@@ -247,7 +247,7 @@ function createPlantObject(plant: any) {
     (currentPlant.eventDate = plant.eventDate),
     (currentPlant.locationCountryName = plant.gadm.level0),
     (currentPlant.preciseLocationWithinCountry = plant.gadm.level3),
-    (currentPlant.animalClass = plant.class),
+    (currentPlant.vegetalClass = plant.class),
     (currentPlant.country = plant.country),
     (currentPlant.taxonId = plant.taxonID);
   plant.media.forEach((currentImageInfo: string) => {
