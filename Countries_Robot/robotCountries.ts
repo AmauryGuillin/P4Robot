@@ -17,8 +17,8 @@ const CountrySchema = new mongoose.Schema({
   nativeNameOfficial: String,
   nativeNameCommon: String,
   cca2: String,
-  currencieName: String,
-  currencieSymbol: String,
+  currencyName: String,
+  currencySymbol: String,
   capital: String,
   region: String,
   subregion: String,
@@ -49,8 +49,8 @@ class CountryObject {
     public nativeNameOfficial?: string,
     public nativeNameCommon?: string,
     public cca2?: string,
-    public currencieName?: string,
-    public currencieSymbol?: string,
+    public currencyName?: string,
+    public currencySymbol?: string,
     public capital?: string,
     public region?: string,
     public subregion?: string,
@@ -123,8 +123,8 @@ async function saveAnExistingCountry(
       nativeNameOfficial?: string | undefined;
       nativeNameCommon?: string | undefined;
       cca2?: string | undefined;
-      currencieName?: string | undefined;
-      currencieSymbol?: string | undefined;
+      currencyName?: string | undefined;
+      currencySymbol?: string | undefined;
       capital?: string | undefined;
       region?: string | undefined;
       subregion?: string | undefined;
@@ -155,8 +155,8 @@ async function saveAnExistingCountry(
         nativeNameOfficial?: string | undefined;
         nativeNameCommon?: string | undefined;
         cca2?: string | undefined;
-        currencieName?: string | undefined;
-        currencieSymbol?: string | undefined;
+        currencyName?: string | undefined;
+        currencySymbol?: string | undefined;
         capital?: string | undefined;
         region?: string | undefined;
         subregion?: string | undefined;
@@ -185,8 +185,8 @@ async function saveAnExistingCountry(
   existingCountry.nativeNameOfficial = currentCountry.nativeNameOfficial;
   existingCountry.nativeNameCommon = currentCountry.nativeNameCommon;
   existingCountry.cca2 = currentCountry.cca2;
-  existingCountry.currencieName = currentCountry.currencieName;
-  existingCountry.currencieSymbol = currentCountry.currencieSymbol;
+  existingCountry.currencyName = currentCountry.currencyName;
+  existingCountry.currencySymbol = currentCountry.currencySymbol;
   existingCountry.capital = currentCountry.capital;
   existingCountry.region = currentCountry.region;
   existingCountry.subregion = currentCountry.subregion;
@@ -220,8 +220,8 @@ async function saveCountryObject(currentCountry: CountryObject) {
     nativeNameOfficial: currentCountry.nativeNameOfficial,
     nativeNameCommon: currentCountry.nativeNameCommon,
     cca2: currentCountry.cca2,
-    currencieName: currentCountry.currencieName,
-    currencieSymbol: currentCountry.currencieSymbol,
+    currencieName: currentCountry.currencyName,
+    currencieSymbol: currentCountry.currencySymbol,
     capital: currentCountry.capital,
     region: currentCountry.region,
     subregion: currentCountry.subregion,
@@ -275,8 +275,8 @@ async function createCountryObject(country: any) {
   for (const currencyKey in country.currencies) {
     if (country.currencies.hasOwnProperty(currencyKey)) {
       const currency = country.currencies[currencyKey];
-      currentCountry.currencieName = currency.name;
-      currentCountry.currencieSymbol = currency.symbol;
+      currentCountry.currencyName = currency.name;
+      currentCountry.currencySymbol = currency.symbol;
       break;
     }
   }

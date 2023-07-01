@@ -24,8 +24,8 @@ const CountrySchema = new mongoose.Schema({
     nativeNameOfficial: String,
     nativeNameCommon: String,
     cca2: String,
-    currencieName: String,
-    currencieSymbol: String,
+    currencyName: String,
+    currencySymbol: String,
     capital: String,
     region: String,
     subregion: String,
@@ -49,14 +49,14 @@ const CountrySchema = new mongoose.Schema({
     capitalCouldPercentage: Number,
 });
 class CountryObject {
-    constructor(name, official, nativeNameOfficial, nativeNameCommon, cca2, currencieName, currencieSymbol, capital, region, subregion, language, latlng = [], islandlocked, borders = [], area, flag, population, gini, carside, startOfWeek, capitalLocation = [], capitalMainDescription, capitalTemperature, capitalHumidity, capitalPressure, capitalWindSpeed, capitalWindDirection, capitalCloudPercentage) {
+    constructor(name, official, nativeNameOfficial, nativeNameCommon, cca2, currencyName, currencySymbol, capital, region, subregion, language, latlng = [], islandlocked, borders = [], area, flag, population, gini, carside, startOfWeek, capitalLocation = [], capitalMainDescription, capitalTemperature, capitalHumidity, capitalPressure, capitalWindSpeed, capitalWindDirection, capitalCloudPercentage) {
         this.name = name;
         this.official = official;
         this.nativeNameOfficial = nativeNameOfficial;
         this.nativeNameCommon = nativeNameCommon;
         this.cca2 = cca2;
-        this.currencieName = currencieName;
-        this.currencieSymbol = currencieSymbol;
+        this.currencyName = currencyName;
+        this.currencySymbol = currencySymbol;
         this.capital = capital;
         this.region = region;
         this.subregion = subregion;
@@ -122,8 +122,8 @@ function saveAnExistingCountry(existingCountry, currentCountry) {
         existingCountry.nativeNameOfficial = currentCountry.nativeNameOfficial;
         existingCountry.nativeNameCommon = currentCountry.nativeNameCommon;
         existingCountry.cca2 = currentCountry.cca2;
-        existingCountry.currencieName = currentCountry.currencieName;
-        existingCountry.currencieSymbol = currentCountry.currencieSymbol;
+        existingCountry.currencyName = currentCountry.currencyName;
+        existingCountry.currencySymbol = currentCountry.currencySymbol;
         existingCountry.capital = currentCountry.capital;
         existingCountry.region = currentCountry.region;
         existingCountry.subregion = currentCountry.subregion;
@@ -158,8 +158,8 @@ function saveCountryObject(currentCountry) {
             nativeNameOfficial: currentCountry.nativeNameOfficial,
             nativeNameCommon: currentCountry.nativeNameCommon,
             cca2: currentCountry.cca2,
-            currencieName: currentCountry.currencieName,
-            currencieSymbol: currentCountry.currencieSymbol,
+            currencieName: currentCountry.currencyName,
+            currencieSymbol: currentCountry.currencySymbol,
             capital: currentCountry.capital,
             region: currentCountry.region,
             subregion: currentCountry.subregion,
@@ -211,8 +211,8 @@ function createCountryObject(country) {
         for (const currencyKey in country.currencies) {
             if (country.currencies.hasOwnProperty(currencyKey)) {
                 const currency = country.currencies[currencyKey];
-                currentCountry.currencieName = currency.name;
-                currentCountry.currencieSymbol = currency.symbol;
+                currentCountry.currencyName = currency.name;
+                currentCountry.currencySymbol = currency.symbol;
                 break;
             }
         }
