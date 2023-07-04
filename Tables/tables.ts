@@ -201,6 +201,7 @@ export const animalsLatinNames: string[] = [
   "Canis lupus familiaris",
   "Felis catus",
   "Equus ferus caballus",
+  "Varanus komodoensis",
   "Panthera leo",
   "Panthera tigris",
   "Ursus arctos",
