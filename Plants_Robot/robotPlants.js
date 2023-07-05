@@ -19,7 +19,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 import { plantsLatinNames } from "../Tables/tables.js";
 import mongoose from "mongoose";
 class PlantObject {
-    constructor(basisOfRecord, scientificName, kingdom, phylum, order, family, genus, species, genericName, specificEpithet, decimalLongitude, decimalLatitude, continent, year, month, day, eventDate, animalImageInfo, locationCountryName, preciseLocationWithinCountry, vegetalClass, country, taxonId) {
+    constructor(basisOfRecord, scientificName, kingdom, phylum, order, family, genus, species, genericName, specificEpithet, decimalLongitude, decimalLatitude, continent, year, month, day, eventDate, vegetalImageInfo, locationCountryName, preciseLocationWithinCountry, vegetalClass, country, taxonId) {
         this.basisOfRecord = basisOfRecord;
         this.scientificName = scientificName;
         this.kingdom = kingdom;
@@ -37,7 +37,7 @@ class PlantObject {
         this.month = month;
         this.day = day;
         this.eventDate = eventDate;
-        this.animalImageInfo = animalImageInfo;
+        this.vegetalImageInfo = vegetalImageInfo;
         this.locationCountryName = locationCountryName;
         this.preciseLocationWithinCountry = preciseLocationWithinCountry;
         this.vegetalClass = vegetalClass;
@@ -63,7 +63,7 @@ const plantSchema = new mongoose.Schema({
     month: Number,
     day: Number,
     eventDate: String,
-    animalImageInfo: Object,
+    vegetalImageInfo: Object,
     locationCountryName: Object,
     preciseLocationWithinCountry: Object,
     vegetalClass: String,
@@ -131,7 +131,7 @@ function saveAnExistingPlant(existingPlantItem, currentPlant) {
         existingPlantItem.month = currentPlant.month;
         existingPlantItem.day = currentPlant.day;
         existingPlantItem.eventDate = currentPlant.eventDate;
-        existingPlantItem.animalImageInfo = currentPlant.animalImageInfo;
+        existingPlantItem.vegetalImageInfo = currentPlant.vegetalImageInfo;
         existingPlantItem.locationCountryName = currentPlant.locationCountryName;
         existingPlantItem.preciseLocationWithinCountry =
             currentPlant.preciseLocationWithinCountry;
@@ -161,7 +161,7 @@ function savePlantObject(currentPlant) {
             month: currentPlant.month,
             day: currentPlant.day,
             eventDate: currentPlant.eventDate,
-            animalImageInfo: currentPlant.animalImageInfo,
+            vegetalImageInfo: currentPlant.vegetalImageInfo,
             locationCountryName: currentPlant.locationCountryName,
             preciseLocationWithinCountry: currentPlant.preciseLocationWithinCountry,
             vegetalClass: currentPlant.vegetalClass,
@@ -196,7 +196,7 @@ function createPlantObject(plant) {
         (currentPlant.country = plant.country),
         (currentPlant.taxonId = plant.taxonID);
     plant.media.forEach((currentImageInfo) => {
-        currentPlant.animalImageInfo = currentImageInfo;
+        currentPlant.vegetalImageInfo = currentImageInfo;
     });
     return currentPlant;
 }

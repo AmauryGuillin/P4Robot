@@ -91,10 +91,10 @@ async function fetchAnimals(animalToFetch: string) {
             let currentAnimal = createAnimalObject(animal);
             if (existingAnimalItem) {
               await saveAnExistingAnimal(existingAnimalItem, currentAnimal);
-              console.log(`Animal "${animal.scientificName}" has been updated`);
+              //console.log(`Animal "${animal.scientificName}" has been updated`);
             } else {
               await saveAnimalObject(currentAnimal);
-              console.log(`Animal "${animal.scientificName}" has been added`);
+              //console.log(`Animal "${animal.scientificName}" has been added`);
             }
           }
         }
@@ -254,8 +254,7 @@ function createAnimalObject(animal: any) {
 }
 
 async function displayAnimalsInfo() {
-  const date = new Date();
-  console.log(`RobotAnimals powered ON (${date})`);
+  console.log(`RobotAnimals powered ON (${new Date()})`);
   try {
     mongoose.connect("mongodb://127.0.0.1:27017/test");
     for (const animalToFetch of animalsLatinNames) {
@@ -265,7 +264,7 @@ async function displayAnimalsInfo() {
   } catch (error) {
     console.error(`An error occurred while connecting to MongoDB: ${error}`);
   }
-  console.log(`RobotAnimals powered OFF (${date})`);
+  console.log(`RobotAnimals powered OFF (${new Date()})`);
 }
 
 displayAnimalsInfo();

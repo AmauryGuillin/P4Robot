@@ -93,11 +93,11 @@ function fetchAnimals(animalToFetch) {
                             let currentAnimal = createAnimalObject(animal);
                             if (existingAnimalItem) {
                                 yield saveAnExistingAnimal(existingAnimalItem, currentAnimal);
-                                console.log(`Animal "${animal.scientificName}" has been updated`);
+                                //console.log(`Animal "${animal.scientificName}" has been updated`);
                             }
                             else {
                                 yield saveAnimalObject(currentAnimal);
-                                console.log(`Animal "${animal.scientificName}" has been added`);
+                                //console.log(`Animal "${animal.scientificName}" has been added`);
                             }
                         }
                     }
